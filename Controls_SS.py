@@ -1,20 +1,10 @@
 from spherov2 import scanner
 from spherov2.sphero_edu import SpheroEduAPI
 
-toys = scanner.find_toys()
+# Find toys
+toy = scanner.find_toy(toy_name = "SB-76B3")
 
-print(toys)
+print(toy)
 
-#print("hi")
-
-api1 = SpheroEduAPI(toys[0])
-api1.spin(360, 1)
-
-api2 = SpheroEduAPI(toys[1])
-api1.spin(360, 1)
-
-api1.spin(360, 1)
-
-api2.spin(360, 1)
-
-api1.spin(360, 1)
+with SpheroEduAPI(toy) as api:
+    api.roll(0, 255, 1)
