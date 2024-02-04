@@ -1,14 +1,17 @@
 from spherov2 import scanner
 from spherov2.sphero_edu import SpheroEduAPI
+from spherov2.types import Color
 import threading
 import time
 
 def control_toy(toy, id):
     print(id)
     with SpheroEduAPI(toy) as api:
+        api.set_matrix_fill(x1 = 1, y1 = 1, x2 = 8, y2 = 8, color = Color(r = 255, g = 0, b = 0)) 
+        # still needs more work 
         while commands[id] != "":    
             api.roll(0, 255, 1)
-            print(commands[id])
+            print(commands[id][:1])
             commands[id] = commands[id][1:]
             time.sleep(0.1)
 
