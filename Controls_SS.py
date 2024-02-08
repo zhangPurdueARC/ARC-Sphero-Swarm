@@ -15,8 +15,11 @@ def control_toy(toy, id):
             print(commands[id][0])
             if (commands[id][0] == "%"):
                 break
-            elif (commands[id][0] == "r"):
+            elif (commands[id][0] == "m"):
                 api.roll(0, 255, 0.1)
+            # probably need to graph sphero turning in order to get a good idea of what the rotate command should be
+            else:
+                print(commands[id][0] + "is an invalid command!")
             time.sleep(0.1)
             commands[id] = commands[id][1:]
 
@@ -25,13 +28,14 @@ def run_toy_threads(toys):
     global commands 
     commands = []
     for toy in toys:
-        commands.append("abcd%")
+        commands.append(["a"], ["b"], ["c"], ["d"], ["%"])
     id = 0
     for toy in toys:
         thread = threading.Thread(target=control_toy, args=[toy, id])
         threads.append(thread)
         thread.start()
         id += 1
+    # while True: need to recieve commands in constantly updating format
     for thread in threads:
         thread.join()
     print("Ending function...")
