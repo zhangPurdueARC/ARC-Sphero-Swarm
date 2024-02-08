@@ -7,20 +7,25 @@ import time
 def control_toy(toy, id):
     print(id)
     with SpheroEduAPI(toy) as api:
-        api.set_matrix_fill(x1 = 1, y1 = 1, x2 = 8, y2 = 8, color = Color(r = 255, g = 0, b = 0)) 
-        # still needs more work 
-        while commands[id] != "":    
-            api.roll(0, 255, 1)
-            print(commands[id][:1])
-            commands[id] = commands[id][1:]
+        choosenColor = Color(r = 255, g = 0, b = 0)
+        api.set_front_led(choosenColor)
+        api.set_back_led(choosenColor)
+        # still needs more work (untested, also probably doesn't work on matrix)
+        while True:    
+            print(commands[id][0])
+            if (commands[id][0] == "%"):
+                break
+            elif (commands[id][0] == "r"):
+                api.roll(0, 255, 0.1)
             time.sleep(0.1)
+            commands[id] = commands[id][1:]
 
 def run_toy_threads(toys):
     threads = []
     global commands 
     commands = []
     for toy in toys:
-        commands.append("abcd")
+        commands.append("abcd%")
     id = 0
     for toy in toys:
         thread = threading.Thread(target=control_toy, args=[toy, id])
