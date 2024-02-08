@@ -28,7 +28,7 @@ def run_toy_threads(toys):
     global commands 
     commands = []
     for toy in toys:
-        commands.append(["a"], ["b"], ["c"], ["d"], ["%"])
+        commands.append(["a"], ["b"], ["c"], ["d"], ["%"]) # matrix is needed for more complex commands
     id = 0
     for toy in toys:
         thread = threading.Thread(target=control_toy, args=[toy, id])
