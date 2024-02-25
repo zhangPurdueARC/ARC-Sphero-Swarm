@@ -5,53 +5,71 @@ import threading
 import time
 
 def toy_manager(toy, id):
-    global recieveNew
     global commands
     with SpheroEduAPI(toy) as api:
         while True:
-            if recieveNew == True:
-                recieveNew = False
-                control_toy(api, id, commands[id])
-            else:
-                exit() # temp measure to prevent infinite loop
+            print(id)
+            global allReady
+            global commands
 
-def control_toy(api, id, command):
-    global allReady
-    choosenColor = Color(r = 255, g = 0, b = 0)
-    api.set_main_led(choosenColor)
-    api.set_front_led(choosenColor)
-    api.set_back_led(choosenColor)
-    direction = 0
-    # doesn't work on matrix, but does work on the positional lights
-    numIterations = 0
-    while True and command != []:
-        print("{}: {}".format(id, command[0]))
-        if (command[0] == "%"):
-            allReady[id] = 1
-            break
-        elif (command[0] == "c"):
-            api.calibrate_compass()
-            api.set_main_led(choosenColor)
-        elif (command[0] == "m"):
-            api.roll(api.get_compass_direction() + direction, 255, 0.5)
-            time.sleep(0.5)
-        elif (command[0] == "r"):
-            direction += 90
-        # probably need to graph sphero turning in order to get a good idea of what the rotate command should be
-        else:
-            print(command[0] + " in ball {} is an invalid command!".format(id))
-        command = command[1:]
-        allReady[id][numIterations] = 1
-        while True:
-            ready = True
-            for readiness in allReady:
-                if (readiness[numIterations] == 0):
-                    ready = False
-                    break
-            if (ready):
-                break
-        numIterations += 1
-        time.sleep(1)
+            choosenColor = Color(r = 0, g = 0, b = 0)
+
+            direction = 0
+            numIterations = 0
+
+            while True and commands[id] != []:
+                print("{}: {}".format(id, commands[id][0]))
+                if (commands[id][0] == "%"):
+                    pass
+                elif (commands[id][0] == "c"):
+                    api.calibrate_compass() # not perfect - need feedback
+                    api.set_main_led(choosenColor)
+                elif (commands[id][0] == "m"):
+                    api.roll(api.get_compass_direction() + direction, 255, 0.5)
+                    time.sleep(0.5)
+                elif (commands[id][0][0] == "R"):
+                    print(commands[id][0][1:])
+                    direction += int(commands[id][0][1:])
+                    # probably need to graph sphero turning in order to get a good idea of what the rotate command should be
+                elif (commands[id][0] == "Cred"):
+                    choosenColor = Color(r = 255, g = 0, b = 0)
+                    api.set_main_led(choosenColor)
+                    api.set_front_led(choosenColor)
+                    api.set_back_led(choosenColor)
+                elif (commands[id][0] == "Cgreen"):
+                    choosenColor = Color(r = 0, g = 255, b = 0)
+                    api.set_main_led(choosenColor)
+                    api.set_front_led(choosenColor)
+                    api.set_back_led(choosenColor)
+                elif (commands[id][0] == "Cblue"):
+                    choosenColor = Color(r = 0, g = 0, b = 255)
+                    api.set_main_led(choosenColor)
+                    api.set_front_led(choosenColor)
+                    api.set_back_led(choosenColor)
+                elif (commands[id][0] == "Cblack"):
+                    choosenColor = Color(r = 0, g = 0, b = 0)
+                    api.set_main_led(choosenColor)
+                    api.set_front_led(choosenColor)
+                    api.set_back_led(choosenColor)
+                elif (commands[id][0] == "Cwhite"):
+                    choosenColor = Color(r = 255, g = 255, b = 255)
+                    api.set_main_led(choosenColor)
+                    api.set_front_led(choosenColor)
+                    api.set_back_led(choosenColor)
+                else:
+                    print(commands[id][0] + " in ball {} is an invalid command!".format(id))
+                commands[id] = commands[id][1:]
+                allReady[id][numIterations] = 1
+                while True:
+                    ready = True
+                    for readiness in allReady:
+                        if (readiness[numIterations] == 0):
+                            ready = False
+                            break
+                    if (ready):
+                        break
+                numIterations += 1
+                time.sleep(1)
 
 def commandInputs(toys): # needs to be able to consistently take in data
     global commands
@@ -60,7 +78,7 @@ def commandInputs(toys): # needs to be able to consistently take in data
     commands = []
     allReady = []
 
-    command = "cmrm%"
+    command =  ["Cwhite", "Cred", "Cgreen", "Cblack", "Cblue", "c", "m", "R90", "m", "%"]
     for toy in toys:
         commands.append(command) # matrix is needed for more complex commands
         allReady.append([0] * len(command))
@@ -71,11 +89,12 @@ def run_toy_threads(toys):
     
     global commands
     global allReady
-    global recieveNew
-
-    recieveNew = True
 
     commandInputs(toys)
+
+    #commands = [["Cblack", "c", "m", "R90", "m", "%"]] #["Cblack", "c", "m", "R90", "m", "%"]]
+    #allReady = ([0] * len(commands[0])) * len(commands)
+    #print(allReady)
 
     for toy in toys:
         thread = threading.Thread(target=toy_manager, args=[toy, id])
@@ -87,11 +106,7 @@ def run_toy_threads(toys):
         thread.join()
     print("Ending function...")
 
-# Find toys
-toys = scanner.find_toys(toy_names = ["SB-76B3"]) # "SB-B11D"
+toys = scanner.find_toys(toy_names = ["SB-76B3", "SB-CEB2"]) # can't use normal find toy in conjunction 
+# seems to raise bleak exception errors if it is done that way
 print(toys)
-
-try:
-    run_toy_threads(toys)
-except KeyboardInterrupt:
-    print("Force terminating function.")
+run_toy_threads(toys)
