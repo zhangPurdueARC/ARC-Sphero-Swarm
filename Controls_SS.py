@@ -13,19 +13,21 @@ def toy_manager(toy, id):
             global commands
 
             choosenColor = Color(r = 0, g = 0, b = 0)
-
+            
+            magBase = 0
             direction = 0
             numIterations = 0
 
             while True and commands[id] != []:
                 print("{}: {}".format(id, commands[id][0]))
-                if (commands[id][0] == "%"):
-                    pass
+                if (commands[id][0] == "%"): # be very careful with this - needs to be the absolute last command!
+                    return
                 elif (commands[id][0] == "c"):
                     api.calibrate_compass() # not perfect - need feedback
+                    magBase = api.get_compass_direction()
                     api.set_main_led(choosenColor)
                 elif (commands[id][0] == "m"):
-                    api.roll(api.get_compass_direction() + direction, 255, 0.5)
+                    api.roll(magBase + direction, 255, 0.25)
                     time.sleep(0.5)
                 elif (commands[id][0][0] == "R"):
                     print(commands[id][0][1:])
@@ -78,7 +80,7 @@ def commandInputs(toys): # needs to be able to consistently take in data
     commands = []
     allReady = []
 
-    command =  ["Cwhite", "Cred", "Cgreen", "Cblack", "Cblue", "c", "m", "R90", "m", "%"]
+    command =  ["Cblue", "c", "m", "R90", "m", "%"]
     for toy in toys:
         commands.append(command) # matrix is needed for more complex commands
         allReady.append([0] * len(command))
@@ -104,9 +106,11 @@ def run_toy_threads(toys):
     
     for thread in threads:
         thread.join()
+        
     print("Ending function...")
 
 toys = scanner.find_toys(toy_names = ["SB-76B3", "SB-CEB2"]) # can't use normal find toy in conjunction 
 # seems to raise bleak exception errors if it is done that way
+
 print(toys)
 run_toy_threads(toys)
