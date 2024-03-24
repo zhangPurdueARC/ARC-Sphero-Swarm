@@ -1,6 +1,7 @@
 from spherov2 import scanner
 from spherov2.sphero_edu import SpheroEduAPI
 from spherov2.types import Color
+import multiprocessing
 import threading
 import time
 
@@ -84,7 +85,10 @@ def commandInputs(toys): # needs to be able to consistently take in data
     for toy in toys:
         commands.append(command) # matrix is needed for more complex commands
         allReady.append([0] * len(command))
-            
+
+def commandReading(toys):
+    pass
+
 def run_toy_threads(toys):
     id = 0
     threads = []
@@ -109,8 +113,8 @@ def run_toy_threads(toys):
         
     print("Ending function...")
 
-toys = scanner.find_toys(toy_names = ["SB-76B3", "SB-CEB2"]) # can't use normal find toy in conjunction 
-# seems to raise bleak exception errors if it is done that way
+toys = scanner.find_toys() # can't use normal find toy in conjunction "SB-76B3", "SB-1840", "SB-B11D"
+# seems to raise bleak exception errors if it is done that way 
 
 print(toys)
 run_toy_threads(toys)
