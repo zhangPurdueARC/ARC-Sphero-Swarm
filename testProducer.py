@@ -10,7 +10,7 @@ try:
             pass
         fileNum = 0
         while True:
-            fileName = "algorithm/hello"+str(fileNum)+".txt"
+            fileName = "algorithm/Commands"+str(fileNum)+".txt"
             with open(fileName, "w") as file:
                 file.write("Commands") # needs to be filed with actual commands though
                 fileNum += 1
