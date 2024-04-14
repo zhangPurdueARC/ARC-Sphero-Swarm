@@ -1,4 +1,4 @@
-from spherov2 import scanner
+from spherov2 import scanner # turning works on relative direction
 from spherov2.sphero_edu import SpheroEduAPI
 from spherov2.types import Color
 import multiprocessing
@@ -27,11 +27,10 @@ def toy_manager(toy, id):
                     api.calibrate_compass() # not perfect - need feedback
                     magBase = api.get_compass_direction()
                     api.set_main_led(choosenColor)
-                elif (commands[id][0] == "m"):
-                    api.roll(magBase + direction, 255, 0.25)
+                elif (commands[id][0][0] == "m"):
+                    api.roll(magBase + direction, 255, float(commands[id][0][1:]))
                     time.sleep(0.5)
                 elif (commands[id][0][0] == "R"):
-                    print(commands[id][0][1:])
                     direction += int(commands[id][0][1:])
                     # probably need to graph sphero turning in order to get a good idea of what the rotate command should be
                 elif (commands[id][0] == "Cred"):
@@ -59,6 +58,8 @@ def toy_manager(toy, id):
                     api.set_main_led(choosenColor)
                     api.set_front_led(choosenColor)
                     api.set_back_led(choosenColor)
+                elif (commands[id][0][0] == "d"):
+                    time.sleep(float(commands[id][0][1:]))
                 else:
                     print(commands[id][0] + " in ball {} is an invalid command!".format(id))
                 commands[id] = commands[id][1:]
@@ -81,7 +82,9 @@ def commandInputs(toys): # needs to be able to consistently take in data
     commands = []
     allReady = []
 
-    command =  ["Cblue", "c", "m", "R90", "m", "%"]
+    #commands = [[], [], []]
+
+    command =  ["Cblue", "c", "m0.25", "R90", "m0.25", "R30", "d2", "m0.5", "%"]
     for toy in toys:
         commands.append(command) # matrix is needed for more complex commands
         allReady.append([0] * len(command))
