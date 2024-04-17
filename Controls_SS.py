@@ -1,9 +1,10 @@
-from spherov2 import scanner # turning works on relative direction
+from spherov2 import scanner # turning works on relative direction, need to update code to match
 from spherov2.sphero_edu import SpheroEduAPI
 from spherov2.types import Color
 import multiprocessing
 import threading
 import time
+import sys
 
 def toy_manager(toy, id):
     global commands
@@ -16,7 +17,7 @@ def toy_manager(toy, id):
             choosenColor = Color(r = 0, g = 0, b = 0)
             
             magBase = 0
-            direction = 0
+            direction = 0   
             numIterations = 0
 
             while True and commands[id] != []:
@@ -84,7 +85,7 @@ def commandInputs(toys): # needs to be able to consistently take in data
 
     #commands = [[], [], []]
 
-    command =  ["Cblue", "c", "m0.25", "R90", "m0.25", "R30", "d2", "m0.5", "%"]
+    command =  ["Cblue", "m0.25", "R90", "m0.25", "R30", "d2", "m0.5", "%"]
     for toy in toys:
         commands.append(command) # matrix is needed for more complex commands
         allReady.append([0] * len(command))
@@ -120,4 +121,14 @@ toys = scanner.find_toys() # can't use normal find toy in conjunction "SB-76B3",
 # seems to raise bleak exception errors if it is done that way 
 
 print(toys)
+
+try: 
+    for toy in toys: # fighting back against the bleak error exceptions
+        with SpheroEduAPI(toy) as api:
+            api.calibrate_compass()
+            api.reset_aim()
+except:
+    print("Error!")
+    sys.exit()
+
 run_toy_threads(toys)
