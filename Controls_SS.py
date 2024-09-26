@@ -85,7 +85,7 @@ def commandInputs(toys): # needs to be able to consistently take in data
 
     #commands = [[], [], []]
 
-    command =  ["Cblue", "m0.25", "R90", "m0.25", "R30", "d2", "m0.5", "%"]
+    command =  ["Cblue", "m10", "%"]
     for toy in toys:
         commands.append(command) # matrix is needed for more complex commands
         allReady.append([0] * len(command))
@@ -120,13 +120,16 @@ def run_toy_threads(toys):
 toys = scanner.find_toys() # can't use normal find toy in conjunction "SB-76B3", "SB-1840", "SB-B11D"
 # seems to raise bleak exception errors if it is done that way 
 
+toys = scanner.find_toys(toy_names = ["SB-CEB2"])
+
 print(toys)
 
 try: 
     for toy in toys: # fighting back against the bleak error exceptions
         with SpheroEduAPI(toy) as api:
-            api.calibrate_compass()
-            api.reset_aim()
+            # api.calibrate_compass()
+            # api.reset_aim()
+            pass
 except:
     print("Error!")
     sys.exit()
