@@ -1,8 +1,6 @@
 from spherov2 import scanner 
 from spherov2.sphero_edu import SpheroEduAPI
 import csv
-import matplotlib.pyplot as plt
-import numpy as np
 
 toy = scanner.find_toy(toy_name="SB-CEB2") # can't use normal find toy in conjunction "SB-76B3", "SB-1840", "SB-B11D"
 # seems to raise bleak exception errors if it is done that way 
