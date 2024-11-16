@@ -120,7 +120,7 @@ def run_toy_threads(toys):
 toys = scanner.find_toys() # can't use normal find toy in conjunction "SB-76B3", "SB-1840", "SB-B11D"
 # seems to raise bleak exception errors if it is done that way 
 
-toys = scanner.find_toys(toy_names = ["SB-CEB2"])
+toys = scanner.find_toys(toy_names = ["SB-76B3", "SB-1840", "SB-B11D", "SB-CEB2"])
 
 print(toys)
 
